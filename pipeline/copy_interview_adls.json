@@ -1,0 +1,85 @@
+{
+	"name": "copy_interview_adls",
+	"properties": {
+		"activities": [
+			{
+				"name": "mysql_intrview_ADLS",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "MySqlSource"
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobFSWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "sourcemysqlinterviewdb",
+						"type": "DatasetReference",
+						"parameters": {
+							"dataset_dbname": {
+								"value": "@pipeline().parameters.pipeline_dbname",
+								"type": "Expression"
+							},
+							"dataset_table_name": {
+								"value": "@pipeline().parameters.pipeline_tablename",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "sink_interview_dbdata",
+						"type": "DatasetReference",
+						"parameters": {
+							"dataset_filename": {
+								"value": "@pipeline().parameters.pipeline_filename",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			}
+		],
+		"parameters": {
+			"pipeline_dbname": {
+				"type": "string"
+			},
+			"pipeline_tablename": {
+				"type": "string"
+			},
+			"pipeline_filename": {
+				"type": "string"
+			}
+		},
+		"annotations": []
+	}
+}
