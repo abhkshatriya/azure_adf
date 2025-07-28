@@ -905,6 +905,43 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/sourcemysqlinterviewdb')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "MySql_local_ls",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"db_name": {
+							"value": "@dataset().dataset_dbname",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"dataset_dbname": {
+						"type": "string"
+					},
+					"dataset_table_name": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "MySqlTable",
+				"schema": [],
+				"typeProperties": {
+					"tableName": {
+						"value": "@dataset().dataset_table_name",
+						"type": "Expression"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/MySql_local_ls')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/HttpServer_rest_api')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
