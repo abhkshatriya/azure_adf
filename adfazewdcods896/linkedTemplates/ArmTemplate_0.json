@@ -274,6 +274,43 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/sink_interview_dbdata')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "datalake_ls",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"dataset_filename": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": {
+							"value": "@dataset().dataset_filename",
+							"type": "Expression"
+						},
+						"folderPath": "interview",
+						"fileSystem": "mysql"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/datalake_ls')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/sinkdataset_api')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -790,6 +827,100 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/sourcedataset_mysql')]",
 				"[concat(variables('factoryId'), '/datasets/sinkdataset_csv')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/copy_interview_adls')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "mysql_intrview_ADLS",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "MySqlSource"
+							},
+							"sink": {
+								"type": "DelimitedTextSink",
+								"storeSettings": {
+									"type": "AzureBlobFSWriteSettings"
+								},
+								"formatSettings": {
+									"type": "DelimitedTextWriteSettings",
+									"quoteAllText": true,
+									"fileExtension": ".txt"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"typeConversion": true,
+								"typeConversionSettings": {
+									"allowDataTruncation": true,
+									"treatBooleanAsNumber": false
+								}
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "sourcemysqlinterviewdb",
+								"type": "DatasetReference",
+								"parameters": {
+									"dataset_dbname": {
+										"value": "@pipeline().parameters.pipeline_dbname",
+										"type": "Expression"
+									},
+									"dataset_table_name": {
+										"value": "@pipeline().parameters.pipeline_tablename",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "sink_interview_dbdata",
+								"type": "DatasetReference",
+								"parameters": {
+									"dataset_filename": {
+										"value": "@pipeline().parameters.pipeline_filename",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"pipeline_dbname": {
+						"type": "string"
+					},
+					"pipeline_tablename": {
+						"type": "string"
+					},
+					"pipeline_filename": {
+						"type": "string"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/sourcemysqlinterviewdb')]",
+				"[concat(variables('factoryId'), '/datasets/sink_interview_dbdata')]"
 			]
 		},
 		{
