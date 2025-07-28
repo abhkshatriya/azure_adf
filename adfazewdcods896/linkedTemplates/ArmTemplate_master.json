@@ -1,0 +1,112 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "adfazewdcods896"
+		},
+		"MySql_local_ls_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'MySql_local_ls'"
+		},
+		"datalake_ls_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'datalake_ls'"
+		},
+		"HttpServer_rest_api_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://dummy.restapiexample.com/"
+		},
+		"MySql_local_ls_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "localhost"
+		},
+		"MySql_local_ls_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "@{linkedService().db_name}"
+		},
+		"MySql_local_ls_properties_typeProperties_username": {
+			"type": "string",
+			"defaultValue": "root"
+		},
+		"datalake_ls_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://dlsazewddatalakelob896.dfs.core.windows.net"
+		},
+		"trigger_parametrised_pipeline1_properties_pipeline_copy1_parameters_db_namepipeline": {
+			"type": "string",
+			"defaultValue": "bigdata"
+		},
+		"trigger_parametrised_pipeline1_properties_pipeline_copy1_parameters_table_pipeline": {
+			"type": "string",
+			"defaultValue": "employees"
+		},
+		"trigger_parametrised_pipeline1_properties_pipeline_copy1_parameters_ADLS_Directory_Name": {
+			"type": "string",
+			"defaultValue": "bigdata"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "adfazewdcods896_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"datalake_ls_accountKey": {
+						"value": "[parameters('datalake_ls_accountKey')]"
+					},
+					"MySql_local_ls_password": {
+						"value": "[parameters('MySql_local_ls_password')]"
+					},
+					"HttpServer_rest_api_properties_typeProperties_url": {
+						"value": "[parameters('HttpServer_rest_api_properties_typeProperties_url')]"
+					},
+					"datalake_ls_properties_typeProperties_url": {
+						"value": "[parameters('datalake_ls_properties_typeProperties_url')]"
+					},
+					"MySql_local_ls_properties_typeProperties_server": {
+						"value": "[parameters('MySql_local_ls_properties_typeProperties_server')]"
+					},
+					"MySql_local_ls_properties_typeProperties_database": {
+						"value": "[parameters('MySql_local_ls_properties_typeProperties_database')]"
+					},
+					"MySql_local_ls_properties_typeProperties_username": {
+						"value": "[parameters('MySql_local_ls_properties_typeProperties_username')]"
+					},
+					"trigger_parametrised_pipeline1_properties_pipeline_copy1_parameters_db_namepipeline": {
+						"value": "[parameters('trigger_parametrised_pipeline1_properties_pipeline_copy1_parameters_db_namepipeline')]"
+					},
+					"trigger_parametrised_pipeline1_properties_pipeline_copy1_parameters_table_pipeline": {
+						"value": "[parameters('trigger_parametrised_pipeline1_properties_pipeline_copy1_parameters_table_pipeline')]"
+					},
+					"trigger_parametrised_pipeline1_properties_pipeline_copy1_parameters_ADLS_Directory_Name": {
+						"value": "[parameters('trigger_parametrised_pipeline1_properties_pipeline_copy1_parameters_ADLS_Directory_Name')]"
+					}
+				}
+			},
+			"dependsOn": []
+		}
+	]
+}
