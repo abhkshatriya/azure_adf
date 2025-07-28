@@ -1,0 +1,32 @@
+{
+	"name": "sourcemysqlinterviewdb",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "MySql_local_ls",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"db_name": {
+					"value": "@dataset().dataset_dbname",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"dataset_dbname": {
+				"type": "string"
+			},
+			"dataset_table_name": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "MySqlTable",
+		"schema": [],
+		"typeProperties": {
+			"tableName": {
+				"value": "@dataset().dataset_table_name",
+				"type": "Expression"
+			}
+		}
+	}
+}
