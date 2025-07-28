@@ -1,0 +1,7 @@
+{
+	"name": "selfhostedintegrationruntime",
+	"properties": {
+		"type": "SelfHosted",
+		"description": "This is to make data movement from on premises(private network )"
+	}
+}

@@ -1,0 +1,218 @@
+{
+	"name": "pipeline_copy1",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get Metadata_check",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "metadatacheck",
+						"type": "DatasetReference",
+						"parameters": {
+							"ADLS_Directory_Name": {
+								"value": "@pipeline().parameters.ADLS_Directory_Name",
+								"type": "Expression"
+							}
+						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobFSReadSettings",
+						"recursive": true,
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "DelimitedTextReadSettings"
+					}
+				}
+			},
+			{
+				"name": "If Condition1",
+				"type": "IfCondition",
+				"dependsOn": [
+					{
+						"activity": "Get Metadata_check",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@not(equals(activity('Get Metadata_check').output.childItems,pipeline().parameters.table_pipeline))",
+						"type": "Expression"
+					},
+					"ifTrueActivities": [
+						{
+							"name": "mysql_to_ADLS",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "MySqlSource"
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "sourcedataset_mysql",
+									"type": "DatasetReference",
+									"parameters": {
+										"db_name": {
+											"value": "@pipeline().parameters.db_namepipeline",
+											"type": "Expression"
+										},
+										"table_name": {
+											"value": "@pipeline().parameters.table_pipeline",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "sinkdataset_csv",
+									"type": "DatasetReference",
+									"parameters": {
+										"ADLS_Directory_Name": {
+											"value": "@pipeline().parameters.ADLS_Directory_Name",
+											"type": "Expression"
+										},
+										"File_Name": {
+											"value": "@pipeline().parameters.table_pipeline",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						},
+						{
+							"name": "mysql_to_ADLS_copy1",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "MySqlSource"
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "sourcedataset_mysql",
+									"type": "DatasetReference",
+									"parameters": {
+										"db_name": {
+											"value": "@pipeline().parameters.db_namepipeline",
+											"type": "Expression"
+										},
+										"table_name": {
+											"value": "@pipeline().parameters.table_pipeline",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "sinkdataset_csv",
+									"type": "DatasetReference",
+									"parameters": {
+										"ADLS_Directory_Name": {
+											"value": "@pipeline().parameters.ADLS_Directory_Name",
+											"type": "Expression"
+										},
+										"File_Name": {
+											"value": "@pipeline().parameters.table_pipeline",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"db_namepipeline": {
+				"type": "string"
+			},
+			"table_pipeline": {
+				"type": "string"
+			},
+			"ADLS_Directory_Name": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2025-07-22T17:58:25Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

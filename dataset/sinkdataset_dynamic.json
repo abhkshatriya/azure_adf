@@ -1,0 +1,36 @@
+{
+	"name": "sinkdataset_dynamic",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "datalake_ls",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"ADLS_DIRECTORY_NAME": {
+				"type": "string"
+			},
+			"TABLE_NAME": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().TABLE_NAME",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().ADLS_DIRECTORY_NAME",
+					"type": "Expression"
+				},
+				"fileSystem": "cods"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

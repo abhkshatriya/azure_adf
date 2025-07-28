@@ -1,0 +1,39 @@
+{
+	"name": "metadatacheck2",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "datalake_ls",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"ADLS_Directory_dataset": {
+				"type": "string"
+			},
+			"ADLS_File_Name_dataset": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().ADLS_File_Name_dataset",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().ADLS_Directory_dataset",
+					"type": "Expression"
+				},
+				"fileSystem": "mysql"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
