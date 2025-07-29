@@ -1,0 +1,33 @@
+{
+	"name": "ls_azkv_mysql",
+	"properties": {
+		"parameters": {
+			"ls_dbname": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "MySql",
+		"typeProperties": {
+			"server": "localhost",
+			"port": 3306,
+			"database": "@{linkedService().ls_dbname}",
+			"username": "root",
+			"sslMode": 1,
+			"useSystemTrustStore": 0,
+			"password": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "dkeyvault",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "azkvaultdmysqlsecret"
+			},
+			"driverVersion": "v2"
+		},
+		"connectVia": {
+			"referenceName": "selfhostedintegrationruntime",
+			"type": "IntegrationRuntimeReference"
+		}
+	}
+}
