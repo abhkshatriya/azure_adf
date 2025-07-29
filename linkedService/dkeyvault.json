@@ -1,0 +1,11 @@
+{
+	"name": "dkeyvault",
+	"properties": {
+		"description": "azure key vault for development",
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "https://dkeyvault.vault.azure.net/"
+		}
+	}
+}
