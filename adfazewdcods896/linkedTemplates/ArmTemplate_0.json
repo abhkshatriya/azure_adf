@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "adfazewdcods896"
 		},
+		"AzureDatabricksDeltaLake_ls_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'AzureDatabricksDeltaLake_ls'"
+		},
 		"datalake_ls_accountKey": {
 			"type": "secureString",
 			"metadata": "Secure string for 'accountKey' of 'datalake_ls'"
@@ -23,6 +27,10 @@
 			"type": "string",
 			"defaultValue": "https://dlsazewddatalakelob896.dfs.core.windows.net"
 		},
+		"dkeyvault_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://dkeyvault.vault.azure.net/"
+		},
 		"MySql_local_ls_properties_typeProperties_server": {
 			"type": "string",
 			"defaultValue": "localhost"
@@ -34,18 +42,6 @@
 		"MySql_local_ls_properties_typeProperties_username": {
 			"type": "string",
 			"defaultValue": "root"
-		},
-		"trigger_parametrised_pipeline1_properties_pipeline_copy1_parameters_db_namepipeline": {
-			"type": "string",
-			"defaultValue": "bigdata"
-		},
-		"trigger_parametrised_pipeline1_properties_pipeline_copy1_parameters_table_pipeline": {
-			"type": "string",
-			"defaultValue": "employees"
-		},
-		"trigger_parametrised_pipeline1_properties_pipeline_copy1_parameters_ADLS_Directory_Name": {
-			"type": "string",
-			"defaultValue": "bigdata"
 		}
 	},
 	"variables": {
@@ -151,6 +147,24 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/AzureDatabricksDeltaLake_ls')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureDatabricksDeltaLake",
+				"typeProperties": {
+					"domain": "https://adb-2139620316703248.8.azuredatabricks.net",
+					"clusterId": "0725-053838-tua2pprm",
+					"accessToken": {
+						"type": "SecureString",
+						"value": "[parameters('AzureDatabricksDeltaLake_ls_accessToken')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/HttpServer_rest_api')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -179,6 +193,20 @@
 						"type": "SecureString",
 						"value": "[parameters('datalake_ls_accountKey')]"
 					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/dkeyvault')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "azure key vault for development",
+				"annotations": [],
+				"type": "AzureKeyVault",
+				"typeProperties": {
+					"baseUrl": "[parameters('dkeyvault_properties_typeProperties_baseUrl')]"
 				}
 			},
 			"dependsOn": []
@@ -921,268 +949,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/sourcemysqlinterviewdb')]",
 				"[concat(variables('factoryId'), '/datasets/sink_interview_dbdata')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pipeline_copy1')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Get Metadata_check",
-						"type": "GetMetadata",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataset": {
-								"referenceName": "metadatacheck",
-								"type": "DatasetReference",
-								"parameters": {
-									"ADLS_Directory_Name": {
-										"value": "@pipeline().parameters.ADLS_Directory_Name",
-										"type": "Expression"
-									}
-								}
-							},
-							"fieldList": [
-								"childItems"
-							],
-							"storeSettings": {
-								"type": "AzureBlobFSReadSettings",
-								"recursive": true,
-								"enablePartitionDiscovery": false
-							},
-							"formatSettings": {
-								"type": "DelimitedTextReadSettings"
-							}
-						}
-					},
-					{
-						"name": "If Condition1",
-						"type": "IfCondition",
-						"dependsOn": [
-							{
-								"activity": "Get Metadata_check",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"expression": {
-								"value": "@not(equals(activity('Get Metadata_check').output.childItems,pipeline().parameters.table_pipeline))",
-								"type": "Expression"
-							},
-							"ifTrueActivities": [
-								{
-									"name": "mysql_to_ADLS",
-									"type": "Copy",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "0.12:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"source": {
-											"type": "MySqlSource"
-										},
-										"sink": {
-											"type": "DelimitedTextSink",
-											"storeSettings": {
-												"type": "AzureBlobFSWriteSettings"
-											},
-											"formatSettings": {
-												"type": "DelimitedTextWriteSettings",
-												"quoteAllText": true,
-												"fileExtension": ".txt"
-											}
-										},
-										"enableStaging": false,
-										"translator": {
-											"type": "TabularTranslator",
-											"typeConversion": true,
-											"typeConversionSettings": {
-												"allowDataTruncation": true,
-												"treatBooleanAsNumber": false
-											}
-										}
-									},
-									"inputs": [
-										{
-											"referenceName": "sourcedataset_mysql",
-											"type": "DatasetReference",
-											"parameters": {
-												"db_name": {
-													"value": "@pipeline().parameters.db_namepipeline",
-													"type": "Expression"
-												},
-												"table_name": {
-													"value": "@pipeline().parameters.table_pipeline",
-													"type": "Expression"
-												}
-											}
-										}
-									],
-									"outputs": [
-										{
-											"referenceName": "sinkdataset_csv",
-											"type": "DatasetReference",
-											"parameters": {
-												"ADLS_Directory_Name": {
-													"value": "@pipeline().parameters.ADLS_Directory_Name",
-													"type": "Expression"
-												},
-												"File_Name": {
-													"value": "@pipeline().parameters.table_pipeline",
-													"type": "Expression"
-												}
-											}
-										}
-									]
-								},
-								{
-									"name": "mysql_to_ADLS_copy1",
-									"type": "Copy",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "0.12:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"source": {
-											"type": "MySqlSource"
-										},
-										"sink": {
-											"type": "DelimitedTextSink",
-											"storeSettings": {
-												"type": "AzureBlobFSWriteSettings"
-											},
-											"formatSettings": {
-												"type": "DelimitedTextWriteSettings",
-												"quoteAllText": true,
-												"fileExtension": ".txt"
-											}
-										},
-										"enableStaging": false,
-										"translator": {
-											"type": "TabularTranslator",
-											"typeConversion": true,
-											"typeConversionSettings": {
-												"allowDataTruncation": true,
-												"treatBooleanAsNumber": false
-											}
-										}
-									},
-									"inputs": [
-										{
-											"referenceName": "sourcedataset_mysql",
-											"type": "DatasetReference",
-											"parameters": {
-												"db_name": {
-													"value": "@pipeline().parameters.db_namepipeline",
-													"type": "Expression"
-												},
-												"table_name": {
-													"value": "@pipeline().parameters.table_pipeline",
-													"type": "Expression"
-												}
-											}
-										}
-									],
-									"outputs": [
-										{
-											"referenceName": "sinkdataset_csv",
-											"type": "DatasetReference",
-											"parameters": {
-												"ADLS_Directory_Name": {
-													"value": "@pipeline().parameters.ADLS_Directory_Name",
-													"type": "Expression"
-												},
-												"File_Name": {
-													"value": "@pipeline().parameters.table_pipeline",
-													"type": "Expression"
-												}
-											}
-										}
-									]
-								}
-							]
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"parameters": {
-					"db_namepipeline": {
-						"type": "string"
-					},
-					"table_pipeline": {
-						"type": "string"
-					},
-					"ADLS_Directory_Name": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"lastPublishTime": "2025-07-22T17:58:25Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/metadatacheck')]",
-				"[concat(variables('factoryId'), '/datasets/sourcedataset_mysql')]",
-				"[concat(variables('factoryId'), '/datasets/sinkdataset_csv')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/trigger_parametrised_pipeline1')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "pipeline_copy1",
-							"type": "PipelineReference"
-						},
-						"parameters": {
-							"db_namepipeline": "[parameters('trigger_parametrised_pipeline1_properties_pipeline_copy1_parameters_db_namepipeline')]",
-							"table_pipeline": "[parameters('trigger_parametrised_pipeline1_properties_pipeline_copy1_parameters_table_pipeline')]",
-							"ADLS_Directory_Name": "[parameters('trigger_parametrised_pipeline1_properties_pipeline_copy1_parameters_ADLS_Directory_Name')]"
-						}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Hour",
-						"interval": 6,
-						"startTime": "2025-07-28T20:35:00",
-						"endTime": "2025-07-29T07:16:00",
-						"timeZone": "India Standard Time"
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/pipeline_copy1')]"
 			]
 		}
 	]

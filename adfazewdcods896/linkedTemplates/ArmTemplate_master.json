@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "adfazewdcods896"
 		},
+		"AzureDatabricksDeltaLake_ls_accessToken": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accessToken' of 'AzureDatabricksDeltaLake_ls'"
+		},
 		"MySql_local_ls_password": {
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'MySql_local_ls'"
@@ -34,6 +38,10 @@
 		"datalake_ls_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://dlsazewddatalakelob896.dfs.core.windows.net"
+		},
+		"dkeyvault_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://dkeyvault.vault.azure.net/"
 		},
 		"trigger_parametrised_pipeline1_properties_pipeline_copy1_parameters_db_namepipeline": {
 			"type": "string",
@@ -74,6 +82,9 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
+					"AzureDatabricksDeltaLake_ls_accessToken": {
+						"value": "[parameters('AzureDatabricksDeltaLake_ls_accessToken')]"
+					},
 					"datalake_ls_accountKey": {
 						"value": "[parameters('datalake_ls_accountKey')]"
 					},
@@ -86,6 +97,9 @@
 					"datalake_ls_properties_typeProperties_url": {
 						"value": "[parameters('datalake_ls_properties_typeProperties_url')]"
 					},
+					"dkeyvault_properties_typeProperties_baseUrl": {
+						"value": "[parameters('dkeyvault_properties_typeProperties_baseUrl')]"
+					},
 					"MySql_local_ls_properties_typeProperties_server": {
 						"value": "[parameters('MySql_local_ls_properties_typeProperties_server')]"
 					},
@@ -94,6 +108,24 @@
 					},
 					"MySql_local_ls_properties_typeProperties_username": {
 						"value": "[parameters('MySql_local_ls_properties_typeProperties_username')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "adfazewdcods896_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2024-03-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
 					},
 					"trigger_parametrised_pipeline1_properties_pipeline_copy1_parameters_db_namepipeline": {
 						"value": "[parameters('trigger_parametrised_pipeline1_properties_pipeline_copy1_parameters_db_namepipeline')]"
@@ -106,7 +138,9 @@
 					}
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'adfazewdcods896_ArmTemplate_0')]"
+			]
 		}
 	]
 }

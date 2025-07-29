@@ -5,6 +5,9 @@
 		"factoryName": {
 			"value": "adfazewdcods896"
 		},
+		"AzureDatabricksDeltaLake_ls_accessToken": {
+			"value": ""
+		},
 		"MySql_local_ls_password": {
 			"value": ""
 		},
@@ -25,6 +28,9 @@
 		},
 		"datalake_ls_properties_typeProperties_url": {
 			"value": "https://dlsazewddatalakelob896.dfs.core.windows.net"
+		},
+		"dkeyvault_properties_typeProperties_baseUrl": {
+			"value": "https://dkeyvault.vault.azure.net/"
 		},
 		"trigger_parametrised_pipeline1_properties_pipeline_copy1_parameters_db_namepipeline": {
 			"value": "bigdata"
