@@ -43,6 +43,22 @@
 			"type": "string",
 			"defaultValue": "https://dkeyvault.vault.azure.net/"
 		},
+		"ls_azkv_datalake_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://dlsazewddatalakelob896.dfs.core.windows.net"
+		},
+		"ls_azkv_mysql_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "localhost"
+		},
+		"ls_azkv_mysql_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "@{linkedService().ls_dbname}"
+		},
+		"ls_azkv_mysql_properties_typeProperties_username": {
+			"type": "string",
+			"defaultValue": "root"
+		},
 		"trigger_parametrised_pipeline1_properties_pipeline_copy1_parameters_db_namepipeline": {
 			"type": "string",
 			"defaultValue": "bigdata"
@@ -1178,6 +1194,68 @@
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_azkv_datalake')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('ls_azkv_datalake_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "dkeyvault",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "azkeyvaultddatalakesecrets"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/dkeyvault')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ls_azkv_mysql')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"parameters": {
+					"ls_dbname": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "MySql",
+				"typeProperties": {
+					"server": "[parameters('ls_azkv_mysql_properties_typeProperties_server')]",
+					"port": 3306,
+					"database": "[parameters('ls_azkv_mysql_properties_typeProperties_database')]",
+					"username": "[parameters('ls_azkv_mysql_properties_typeProperties_username')]",
+					"sslMode": 1,
+					"useSystemTrustStore": 0,
+					"password": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "dkeyvault",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "azkvaultdmysqlsecret"
+					},
+					"driverVersion": "v2"
+				},
+				"connectVia": {
+					"referenceName": "selfhostedintegrationruntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/integrationRuntimes/selfhostedintegrationruntime')]",
+				"[concat(variables('factoryId'), '/linkedServices/dkeyvault')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/trigger_parametrised_pipeline1')]",

@@ -32,6 +32,18 @@
 		"dkeyvault_properties_typeProperties_baseUrl": {
 			"value": "https://dkeyvault.vault.azure.net/"
 		},
+		"ls_azkv_datalake_properties_typeProperties_url": {
+			"value": "https://dlsazewddatalakelob896.dfs.core.windows.net"
+		},
+		"ls_azkv_mysql_properties_typeProperties_server": {
+			"value": "localhost"
+		},
+		"ls_azkv_mysql_properties_typeProperties_database": {
+			"value": "@{linkedService().ls_dbname}"
+		},
+		"ls_azkv_mysql_properties_typeProperties_username": {
+			"value": "root"
+		},
 		"trigger_parametrised_pipeline1_properties_pipeline_copy1_parameters_db_namepipeline": {
 			"value": "bigdata"
 		},
