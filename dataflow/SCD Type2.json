@@ -5,6 +5,10 @@
 		"typeProperties": {
 			"sources": [
 				{
+					"dataset": {
+						"referenceName": "dataflow_bigdata_employee",
+						"type": "DatasetReference"
+					},
 					"name": "mysqlbigdata"
 				},
 				{
@@ -22,8 +26,14 @@
 				}
 			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> mysqlbigdata",
+				"source(output(",
+				"          emp_id as string,",
+				"          salary as string,",
+				"          dept_name as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> mysqlbigdata",
 				"source(output(",
 				"          emp_id as integer,",
 				"          salary as integer,",
@@ -33,7 +43,7 @@
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
 				"     format: 'parquet') ~> sourcebronze",
-				"mysqlbigdata, sourcebronze join(emp_id == emp_id,",
+				"mysqlbigdata, sourcebronze join(sourcebronze@emp_id == sourcebronze@emp_id,",
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
