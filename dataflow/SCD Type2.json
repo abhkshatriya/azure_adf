@@ -47,7 +47,7 @@
 				"     joinType:'left',",
 				"     matchType:'exact',",
 				"     ignoreSpaces: false,",
-				"     broadcast: 'auto')~> leftjoin"
+				"     broadcast: 'left')~> leftjoin"
 			]
 		}
 	}
