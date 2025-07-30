@@ -1,0 +1,20 @@
+{
+	"name": "dataflow_mysql_bigdata",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "datalake_ls",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "employees",
+				"folderPath": "bigdata",
+				"fileSystem": "mysql"
+			}
+		},
+		"schema": []
+	}
+}

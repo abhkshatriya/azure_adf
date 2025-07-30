@@ -1,0 +1,33 @@
+{
+	"name": "bronze_delta",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "datalake_ls",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"folderPath": "bigdata/employees",
+				"fileSystem": "bronze"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": [
+			{
+				"name": "emp_id",
+				"type": "INT_32"
+			},
+			{
+				"name": "salary",
+				"type": "INT_32"
+			},
+			{
+				"name": "dept_name",
+				"type": "UTF8"
+			}
+		]
+	}
+}
